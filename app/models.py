@@ -1,13 +1,10 @@
 from datetime import datetime
 
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Integer, String, Boolean, Text, Date, DateTime, ForeignKey, CheckConstraint
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-class Base(DeclarativeBase):
-  pass
+from app import db
 
-db = SQLAlchemy(model_class=Base)
 
 class User(db.Model):
   __tablename__ = 'users'
