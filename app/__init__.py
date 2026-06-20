@@ -56,7 +56,8 @@ def create_app(config_name=None, test_config=None):
     from app.auth import bp as auth_bp
     app.register_blueprint(auth_bp)
 
-    # Le module "users" sera ajouté à l'étape 4.
+    from app.users import bp as users_bp
+    app.register_blueprint(users_bp)
 
     # 6. Pages d'erreur personnalisées.
     register_error_handlers(app)

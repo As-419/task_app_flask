@@ -1,5 +1,7 @@
-"""Module de gestion des utilisateurs.
+"""Module de gestion des utilisateurs (profil, mot de passe, suppression)."""
+from flask import Blueprint
 
-Vide pour le moment : il sera construit à l'ÉTAPE 4 (profil, changement de mot
-de passe, gestion des comptes) sur la branche `etape-4-gestion-utilisateurs`.
-"""
+# url_prefix="/account" => routes /account, /account/edit, /account/password, /account/delete
+bp = Blueprint("users", __name__, url_prefix="/account")
+
+from app.users import routes  # noqa: E402, F401  (importé pour enregistrer les routes)

@@ -152,3 +152,7 @@ body {
 .badge-high   { background: #fee2e2; color: #b91c1c; }
 
 .empty { color: var(--muted); margin-top: 1.5rem; }
+
+/* --- Zone dangereuse (suppression de compte) --- */
+.danger-zone { margin-top: 2rem; border-color: #fecaca; }
+.danger-zone h2 { margin-top: 0; color: var(--error); font-size: 1.1rem; }
