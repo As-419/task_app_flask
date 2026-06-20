@@ -1,5 +1,7 @@
+"""Module d'authentification : inscription, connexion, déconnexion."""
 from flask import Blueprint
 
-bp = Blueprint('auth',__name__)
+# url_prefix="/auth" => les routes deviennent /auth/register, /auth/login, /auth/logout
+bp = Blueprint("auth", __name__, url_prefix="/auth")
 
-from .routes import login
+from app.auth import routes  # noqa: E402, F401  (importé pour enregistrer les routes)

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Task App{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  {# Barre de navigation (partial réutilisable) #}
+  {% include "partials/_navbar.html" %}
+
+  <main class="container">
+    {# Messages flash (succès / erreur / info) #}
+    {% include "partials/_messages.html" %}
+
+    {# Contenu propre à chaque page #}
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <p>Task App — projet pédagogique Flask</p>
+  </footer>
+</body>
+</html>

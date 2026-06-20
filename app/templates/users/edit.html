@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier le profil — Task App{% endblock %}
+
+{% block content %}
+  <h1>Modifier le profil</h1>
+
+  <form class="form" method="post" novalidate>
+    {{ form.hidden_tag() }}  {# jeton CSRF #}
+
+    <div class="form-group">
+      {{ form.username.label }}
+      {{ form.username() }}
+      {% for error in form.username.errors %}
+        <p class="form-error">{{ error }}</p>
+      {% endfor %}
+    </div>
+
+    <div class="form-group">
+      {{ form.email.label }}
+      {{ form.email() }}
+      {% for error in form.email.errors %}
+        <p class="form-error">{{ error }}</p>
+      {% endfor %}
+    </div>
+
+    {{ form.submit(class="btn") }}
+    <a class="btn btn-secondary" href="{{ url_for('users.profile') }}">Annuler</a>
+  </form>
+{% endblock %}

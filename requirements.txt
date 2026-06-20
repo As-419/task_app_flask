@@ -1,0 +1,13 @@
+# Dépendances de l'application (production + développement)
+# Installer avec :  pip install -r requirements.txt
+
+Flask>=3.0,<4.0
+Flask-SQLAlchemy>=3.1,<4.0
+Flask-Migrate>=4.0,<5.0
+Flask-WTF>=1.2,<2.0          # formulaires + protection CSRF
+Flask-Login>=0.6,<0.7        # gestion des sessions de connexion
+Flask-Mail>=0.9,<1.0         # envoi d'e-mails (préparé pour plus tard)
+email-validator>=2.1,<3.0    # validation des adresses e-mail dans les formulaires
+psycopg2-binary>=2.9,<3.0    # pilote PostgreSQL
+python-dotenv>=1.0,<2.0      # lecture du fichier .env
+gunicorn>=21.0,<23.0         # serveur WSGI pour la production
