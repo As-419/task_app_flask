@@ -111,3 +111,44 @@ body {
   font-size: 0.9rem;
   padding: 2rem 1rem;
 }
+
+/* --- Liste des tâches --- */
+.task-list { list-style: none; padding: 0; margin: 1.5rem 0 0; }
+.task {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.7rem 1rem;
+  margin-bottom: 0.6rem;
+}
+.task form { margin: 0; }                 /* les mini-formulaires ne cassent pas l'alignement */
+.task-title { flex: 1; }
+.task-done .task-title { text-decoration: line-through; color: var(--muted); }
+.task-actions { display: flex; align-items: center; gap: 0.8rem; }
+
+.task-check {
+  width: 2rem; height: 2rem;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: #fff;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.task-done .task-check { background: var(--success); color: #fff; border-color: var(--success); }
+
+/* Bouton « Supprimer » présenté comme un lien */
+.link-danger {
+  background: none; border: none; padding: 0;
+  color: var(--error); cursor: pointer; font: inherit; text-decoration: underline;
+}
+
+/* Étiquettes de priorité */
+.badge { font-size: 0.78rem; padding: 0.15rem 0.5rem; border-radius: 999px; }
+.badge-low    { background: #e0f2fe; color: #0369a1; }
+.badge-medium { background: #fef9c3; color: #854d0e; }
+.badge-high   { background: #fee2e2; color: #b91c1c; }
+
+.empty { color: var(--muted); margin-top: 1.5rem; }

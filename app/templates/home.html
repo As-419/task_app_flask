@@ -6,12 +6,12 @@
   <section class="hero">
     <h1>Bienvenue sur Task App</h1>
     <p class="lead">
-      Une petite application de gestion de tâches construite avec Flask,
-      étape par étape.
+      Organisez vos tâches simplement : créez un compte, connectez-vous,
+      et gérez votre liste de choses à faire.
     </p>
     <p>
-      Les fonctionnalités (inscription, connexion, gestion des tâches) seront
-      ajoutées au fil des prochaines étapes.
+      <a class="btn" href="{{ url_for('auth.register') }}">Créer un compte</a>
+      <a class="btn btn-secondary" href="{{ url_for('auth.login') }}">Se connecter</a>
     </p>
   </section>
 {% endblock %}
