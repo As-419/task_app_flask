@@ -1,8 +1,16 @@
 {# Barre de navigation.
-   Les liens de connexion / déconnexion seront ajoutés à l'ÉTAPE 2. #}
+   Les liens changent selon que l'utilisateur est connecté ou non.
+   current_user est fourni automatiquement par Flask-Login. #}
 <nav class="navbar">
   <a class="navbar-brand" href="{{ url_for('tasks.home') }}">✓ Task App</a>
   <div class="navbar-links">
     <a href="{{ url_for('tasks.home') }}">Accueil</a>
+    {% if current_user.is_authenticated %}
+      <span>Bonjour, {{ current_user.username }}</span>
+      <a href="{{ url_for('auth.logout') }}">Déconnexion</a>
+    {% else %}
+      <a href="{{ url_for('auth.login') }}">Connexion</a>
+      <a href="{{ url_for('auth.register') }}">Inscription</a>
+    {% endif %}
   </div>
 </nav>

@@ -8,7 +8,7 @@ import os
 from flask import Flask, render_template
 
 from app.config import config
-from app.extensions import db, mail, migrate
+from app.extensions import csrf, db, login_manager, mail, migrate
 
 
 def create_app(config_name=None, test_config=None):
@@ -33,15 +33,30 @@ def create_app(config_name=None, test_config=None):
     db.init_app(app)
     migrate.init_app(app, db)
     mail.init_app(app)
+    csrf.init_app(app)
+    login_manager.init_app(app)
+
+    # Vers quelle page rediriger un visiteur non connecté qui demande une page protégée.
+    login_manager.login_view = "auth.login"
+    login_manager.login_message = "Veuillez vous connecter pour accéder à cette page."
+    login_manager.login_message_category = "info"
 
     # 4. Importer les modèles pour que Flask-Migrate les connaisse.
     from app import models  # noqa: F401
 
+    # Flask-Login a besoin de savoir comment retrouver un utilisateur à partir de son id.
+    @login_manager.user_loader
+    def load_user(user_id):
+        return db.session.get(models.User, int(user_id))
+
     # 5. Enregistrement des blueprints (modules de l'application).
-    #    Le module "tasks" fournit la page d'accueil.
-    #    Les modules "auth" et "users" seront ajoutés aux étapes suivantes.
     from app.tasks import bp as tasks_bp
     app.register_blueprint(tasks_bp)
+
+    from app.auth import bp as auth_bp
+    app.register_blueprint(auth_bp)
+
+    # Le module "users" sera ajouté à l'étape 4.
 
     # 6. Pages d'erreur personnalisées.
     register_error_handlers(app)

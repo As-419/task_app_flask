@@ -1,12 +1,16 @@
 from datetime import datetime
 
+from flask_login import UserMixin
 from sqlalchemy import Integer, String, Boolean, Text, Date, DateTime, ForeignKey, CheckConstraint
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from app import db
 
 
-class User(db.Model):
+# UserMixin fournit à Flask-Login les propriétés attendues
+# (is_authenticated, is_active, get_id, ...).
+class User(UserMixin, db.Model):
   __tablename__ = 'users'
 
   id: Mapped[int] = mapped_column(Integer, primary_key=True)
@@ -17,6 +21,14 @@ class User(db.Model):
 
   # Relation
   tasks: Mapped[list['Task']] = relationship('Task', back_populates='user', cascade='all, delete')
+
+  def set_password(self, raw_password: str) -> None:
+    """Hache et enregistre le mot de passe (jamais stocké en clair)."""
+    self.password = generate_password_hash(raw_password)
+
+  def check_password(self, raw_password: str) -> bool:
+    """Vérifie un mot de passe en clair contre le hash enregistré."""
+    return check_password_hash(self.password, raw_password)
 
   def __repr__(self):
     return f'<User {self.username}>'
