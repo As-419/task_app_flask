@@ -1,37 +1,62 @@
-import datetime
-import os
-import dotenv
+"""Configuration de l'application.
 
-dotenv.load_dotenv()
+On définit une classe de base `Config` puis une classe par environnement
+(développement, test, production). Le bon profil est choisi au démarrage
+selon la variable d'environnement FLASK_CONFIG.
+"""
+import os
+
+from dotenv import load_dotenv
+
+# Charge les variables définies dans le fichier .env (s'il existe).
+load_dotenv()
+
 
 class Config:
-    SECRET_KEY = os.environ.get("SECRET_KEY")
-    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
-    PROPAGATE_EXCEPTIONS = os.getenv('PROPAGATE_EXCEPTIONS')
+    """Réglages communs à tous les environnements."""
 
-    '''
-     # Email configuration
-    MAIL_SERVER = os.getenv('MAIL_SERVER')
-    MAIL_PORT = int(os.getenv('MAIL_PORT'))
-    MAIL_USE_TLS = os.getenv('MAIL_USE_TLS')
-    MAIL_USE_SSL = os.getenv('MAIL_USE_SSL')
-    MAIL_USERNAME = os.getenv('MAIL_USERNAME')
-    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
-    MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER')
-    JWT_ACCESS_TOKEN_EXPIRES = datetime.timedelta(minutes=60)
-    JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
-    API_TITLE = os.getenv('API_TITLE')
-    OPENAPI_VERSION = os.getenv('OPENAPI_VERSION')
-    API_VERSION = os.getenv('API_VERSION')
-    OPENAPI_JSON_PATH = os.getenv('OPENAPI_JSON_PATH')
-    OPENAPI_URL_PREFIX = os.getenv('OPENAPI_URL_PREFIX')
-    OPENAPI_REDOC_PATH = os.getenv('OPENAPI_REDOC_PATH')
-    OPENAPI_REDOC_URL = os.getenv('OPENAPI_REDOC_URL')
-    OPENAPI_SWAGGER_UI_PATH = os.getenv('OPENAPI_SWAGGER_UI_PATH')
-    OPENAPI_SWAGGER_UI_URL = os.getenv('OPENAPI_SWAGGER_UI_URL')
-    OPENAPI_RAPIDOC_PATH = os.getenv('OPENAPI_RAPIDOC_PATH')
-    OPENAPI_RAPIDOC_URL = os.getenv('OPENAPI_RAPIDOC_URL')
-    '''
+    SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-a-changer")
+    # Désactive un suivi inutile et coûteux des modifications par SQLAlchemy.
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
+class DevelopmentConfig(Config):
+    """Environnement de développement (sur la machine du développeur)."""
 
+    DEBUG = True
+    SQLALCHEMY_DATABASE_URI = os.environ.get(
+        "DATABASE_URL",
+        "postgresql://taskapp:taskapp@localhost:5432/taskapp",
+    )
+
+
+class TestingConfig(Config):
+    """Environnement de test.
+
+    On utilise une base SQLite EN MÉMOIRE : les tests sont rapides et
+    ne nécessitent ni PostgreSQL ni Docker. La protection CSRF est
+    désactivée pour simplifier l'envoi de formulaires dans les tests.
+    """
+
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
+    WTF_CSRF_ENABLED = False
+
+
+class ProductionConfig(Config):
+    """Environnement de production."""
+
+    DEBUG = False
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
+    # Cookies de session sécurisés.
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SECURE = True
+    SESSION_COOKIE_SAMESITE = "Lax"
+
+
+# Table de correspondance : nom -> classe de configuration.
+config = {
+    "development": DevelopmentConfig,
+    "testing": TestingConfig,
+    "production": ProductionConfig,
+}

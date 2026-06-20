@@ -1,5 +1,5 @@
-from flask import Blueprint
+"""Module d'authentification.
 
-bp = Blueprint('auth',__name__)
-
-from .routes import login
+Vide pour le moment : il sera construit à l'ÉTAPE 2 (inscription, connexion,
+déconnexion) sur la branche `etape-2-authentification`.
+"""
