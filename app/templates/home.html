@@ -1,17 +1,36 @@
 {% extends "base.html" %}
 
-{% block title %}Accueil — Task App{% endblock %}
+{% block title %}Accueil — Gestion Daara{% endblock %}
 
 {% block content %}
   <section class="hero">
-    <h1>Bienvenue sur Task App</h1>
+    <span class="eyebrow">École coranique</span>
+    <h1>Gestion de la Daara</h1>
     <p class="lead">
-      Organisez vos tâches simplement : créez un compte, connectez-vous,
-      et gérez votre liste de choses à faire.
+      Gérez les maîtres (serignes), les classes (halqas), les talibés et le suivi
+      de leur progression dans la mémorisation du Coran — et exportez vos listes en CSV.
     </p>
-    <p>
+    <div class="hero-actions">
       <a class="btn" href="{{ url_for('auth.register') }}">Créer un compte</a>
       <a class="btn btn-secondary" href="{{ url_for('auth.login') }}">Se connecter</a>
-    </p>
+    </div>
+
+    <div class="hero-features">
+      <div class="feature">
+        <div class="ic">👳🏽‍♂️</div>
+        <h3>Maîtres & classes</h3>
+        <p>Chaque halqa est encadrée par un serigne, avec son niveau.</p>
+      </div>
+      <div class="feature">
+        <div class="ic">🧒🏽</div>
+        <h3>Talibés</h3>
+        <p>Inscrivez les élèves et rattachez-les à leur classe.</p>
+      </div>
+      <div class="feature">
+        <div class="ic">📖</div>
+        <h3>Progressions</h3>
+        <p>Suivez sourate par sourate la mémorisation du Coran.</p>
+      </div>
+    </div>
   </section>
 {% endblock %}

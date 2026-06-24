@@ -5,11 +5,15 @@ On définit une classe de base `Config` puis une classe par environnement
 selon la variable d'environnement FLASK_CONFIG.
 """
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 
 # Charge les variables définies dans le fichier .env (s'il existe).
-load_dotenv()
+# On vise explicitement la racine du projet pour que le chargement
+# fonctionne quel que soit le répertoire de travail courant.
+_PROJECT_ROOT = Path(__file__).resolve().parent.parent
+load_dotenv(_PROJECT_ROOT / ".env")
 
 
 class Config:
@@ -18,6 +22,10 @@ class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-a-changer")
     # Désactive un suivi inutile et coûteux des modifications par SQLAlchemy.
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # Cookies de session durcis dès le développement (le cookie n'est pas
+    # lisible en JS et n'est pas envoyé en contexte cross-site).
+    SESSION_COOKIE_HTTPONLY = True
+    SESSION_COOKIE_SAMESITE = "Lax"
 
 
 class DevelopmentConfig(Config):
@@ -48,10 +56,8 @@ class ProductionConfig(Config):
 
     DEBUG = False
     SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
-    # Cookies de session sécurisés.
-    SESSION_COOKIE_HTTPONLY = True
+    # En production, le cookie n'est transmis qu'en HTTPS.
     SESSION_COOKIE_SECURE = True
-    SESSION_COOKIE_SAMESITE = "Lax"
 
 
 # Table de correspondance : nom -> classe de configuration.

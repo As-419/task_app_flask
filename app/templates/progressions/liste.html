@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Progressions — Gestion Daara{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <h1>Progressions</h1>
+    <p class="subtitle">La mémorisation du Coran, évaluation par évaluation.</p>
+  </div>
+
+  <div class="toolbar">
+    <a class="btn" href="{{ url_for('progressions.creer') }}">+ Nouvelle progression</a>
+    <span class="grow"></span>
+    <form class="inline" method="get" action="{{ url_for('progressions.liste') }}">
+      <select name="talibe">
+        <option value="">Tous les talibés</option>
+        {% for t in talibes %}
+          <option value="{{ t.matricule }}" {{ 'selected' if talibe_matricule == t.matricule }}>{{ t.nom_complet }}</option>
+        {% endfor %}
+      </select>
+      <button class="btn btn-sm" type="submit">Filtrer</button>
+      {% if talibe_matricule %}<a class="btn btn-sm btn-secondary" href="{{ url_for('progressions.liste') }}">Tout afficher</a>{% endif %}
+    </form>
+    <a class="btn btn-sm btn-secondary" href="{{ url_for('progressions.exporter') }}">⬇ Exporter CSV</a>
+  </div>
+
+  {% if progressions %}
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr><th>Talibé</th><th>Sourate</th><th>Versets</th><th>Date</th><th>Appréciation</th><th></th></tr>
+        </thead>
+        <tbody>
+          {% for p in progressions %}
+            <tr>
+              <td>{{ p.talibe.nom_complet }}</td>
+              <td>{{ p.sourate }}</td>
+              <td><strong>{{ p.nombre_versets }}</strong></td>
+              <td>{{ p.date_evaluation.strftime("%d/%m/%Y") if p.date_evaluation else "—" }}</td>
+              <td>{{ p.appreciation or "—" }}</td>
+              <td>
+                <div class="actions">
+                  <a class="icon-btn" href="{{ url_for('progressions.modifier', id=p.id) }}" title="Modifier">✎</a>
+                  <form method="post" action="{{ url_for('progressions.supprimer', id=p.id) }}"
+                        onsubmit="return confirm('Supprimer cette progression ?');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="icon-btn danger" title="Supprimer">🗑</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty">
+      <span class="ic">📖</span>
+      <h3>Aucune progression</h3>
+      <p>Ajoutez une évaluation (il faut au moins un talibé au préalable).</p>
+    </div>
+  {% endif %}
+{% endblock %}

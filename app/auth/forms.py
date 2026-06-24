@@ -22,7 +22,10 @@ class RegisterForm(FlaskForm):
     )
     password = PasswordField(
         "Mot de passe",
-        validators=[DataRequired(), Length(min=6)],
+        validators=[
+            DataRequired(),
+            Length(min=8, message="Le mot de passe doit faire au moins 8 caractères."),
+        ],
     )
     confirm = PasswordField(
         "Confirmer le mot de passe",

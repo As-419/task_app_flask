@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Tableau de bord — Gestion Daara{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <h1>Tableau de bord</h1>
+    <p class="subtitle">Vue d'ensemble de la daara.</p>
+  </div>
+
+  <div class="stats stats-4">
+    <a class="stat is-accent" href="{{ url_for('maitres.liste') }}">
+      <div class="num">{{ stats.maitres }}</div><div class="lbl">Maîtres</div>
+    </a>
+    <a class="stat" href="{{ url_for('classes.liste') }}">
+      <div class="num">{{ stats.classes }}</div><div class="lbl">Classes</div>
+    </a>
+    <a class="stat" href="{{ url_for('talibes.liste') }}">
+      <div class="num">{{ stats.talibes }}</div><div class="lbl">Talibés</div>
+    </a>
+    <a class="stat is-success" href="{{ url_for('progressions.liste') }}">
+      <div class="num">{{ stats.progressions }}</div><div class="lbl">Progressions</div>
+    </a>
+  </div>
+
+  <div class="card">
+    <h2 class="card-title">Actions rapides</h2>
+    <div class="form-actions" style="flex-wrap: wrap;">
+      <a class="btn" href="{{ url_for('maitres.creer') }}">+ Maître</a>
+      <a class="btn" href="{{ url_for('classes.creer') }}">+ Classe</a>
+      <a class="btn" href="{{ url_for('talibes.creer') }}">+ Talibé</a>
+      <a class="btn" href="{{ url_for('progressions.creer') }}">+ Progression</a>
+    </div>
+  </div>
+{% endblock %}

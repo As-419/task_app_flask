@@ -1,48 +1,44 @@
 {% extends "base.html" %}
 
-{% block title %}Inscription — Task App{% endblock %}
+{% block title %}Inscription — Gestion Daara{% endblock %}
 
 {% block content %}
-  <h1>Créer un compte</h1>
+  <div class="container-narrow" style="margin: 0 auto;">
+    <div class="card auth-card">
+      <h2 class="card-title">Créer un compte</h2>
+      {# novalidate : on laisse WTForms (côté serveur) gérer la validation #}
+      <form method="post" novalidate>
+        {{ form.hidden_tag() }}
 
-  {# novalidate : on laisse WTForms (côté serveur) gérer la validation #}
-  <form class="form" method="post" novalidate>
-    {{ form.hidden_tag() }}  {# jeton CSRF #}
+        <div class="form-group">
+          {{ form.username.label }}
+          {{ form.username(placeholder="Votre pseudo") }}
+          {% for error in form.username.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+        </div>
 
-    <div class="form-group">
-      {{ form.username.label }}
-      {{ form.username() }}
-      {% for error in form.username.errors %}
-        <p class="form-error">{{ error }}</p>
-      {% endfor %}
+        <div class="form-group">
+          {{ form.email.label }}
+          {{ form.email(placeholder="vous@exemple.com") }}
+          {% for error in form.email.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="form-group">
+          {{ form.password.label }}
+          {{ form.password(placeholder="Au moins 8 caractères") }}
+          {% for error in form.password.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="form-group">
+          {{ form.confirm.label }}
+          {{ form.confirm(placeholder="Répétez le mot de passe") }}
+          {% for error in form.confirm.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+        </div>
+
+        {{ form.submit(class="btn btn-block", value="Créer mon compte") }}
+      </form>
+      <p class="auth-foot">Déjà un compte ?
+        <a href="{{ url_for('auth.login') }}">Se connecter</a>
+      </p>
     </div>
-
-    <div class="form-group">
-      {{ form.email.label }}
-      {{ form.email() }}
-      {% for error in form.email.errors %}
-        <p class="form-error">{{ error }}</p>
-      {% endfor %}
-    </div>
-
-    <div class="form-group">
-      {{ form.password.label }}
-      {{ form.password() }}
-      {% for error in form.password.errors %}
-        <p class="form-error">{{ error }}</p>
-      {% endfor %}
-    </div>
-
-    <div class="form-group">
-      {{ form.confirm.label }}
-      {{ form.confirm() }}
-      {% for error in form.confirm.errors %}
-        <p class="form-error">{{ error }}</p>
-      {% endfor %}
-    </div>
-
-    {{ form.submit(class="btn") }}
-  </form>
-
-  <p>Déjà un compte ? <a href="{{ url_for('auth.login') }}">Se connecter</a></p>
+  </div>
 {% endblock %}

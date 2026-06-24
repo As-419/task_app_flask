@@ -1,6 +1,6 @@
 """Tests du module de gestion du compte (profil, mot de passe, suppression)."""
 from app.extensions import db
-from app.models import Task, User
+from app.models import User
 
 
 def _login(client, username="alice", email="alice@test.com", password="secret123"):
@@ -106,15 +106,11 @@ def test_change_password_wrong_current_rejected(client):
 
 # --- Suppression du compte --------------------------------------------------
 
-def test_delete_account_removes_user_and_tasks(client):
+def test_delete_account_removes_user(client):
     user = _login(client)
-    task = Task(user_id=user.id, title="À supprimer")
-    db.session.add(task)
-    db.session.commit()
-    user_id, task_id = user.id, task.id
+    user_id = user.id
 
     response = client.post("/account/delete", follow_redirects=True)
 
     assert response.status_code == 200
     assert db.session.get(User, user_id) is None
-    assert db.session.get(Task, task_id) is None  # tâches supprimées en cascade

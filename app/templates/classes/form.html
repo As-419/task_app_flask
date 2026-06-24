@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}{{ "Nouvelle classe" if mode == "creer" else "Modifier la classe" }} — Gestion Daara{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <h1>{{ "Nouvelle classe" if mode == "creer" else "Modifier la classe" }}</h1>
+  </div>
+
+  <form class="form" method="post" novalidate>
+    {{ form.hidden_tag() }}
+
+    <div class="form-group">
+      {{ form.code.label }}
+      {% if mode == "creer" %}
+        {{ form.code(placeholder="Ex : CL-DEB") }}
+      {% else %}
+        {{ form.code(readonly=true) }}
+      {% endif %}
+      {% for error in form.code.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+    </div>
+
+    <div class="form-group">
+      {{ form.libelle.label }}
+      {{ form.libelle(placeholder="Ex : Halqa des débutants") }}
+      {% for error in form.libelle.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        {{ form.niveau.label }}
+        {{ form.niveau() }}
+        {% for error in form.niveau.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+      </div>
+      <div class="form-group">
+        {{ form.maitre_matricule.label }}
+        {{ form.maitre_matricule() }}
+        {% for error in form.maitre_matricule.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+      </div>
+    </div>
+
+    <div class="form-actions">
+      {{ form.submit(class="btn") }}
+      <a class="btn btn-secondary" href="{{ url_for('classes.liste') }}">Annuler</a>
+    </div>
+  </form>
+{% endblock %}

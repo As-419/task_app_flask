@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}{{ "Nouvelle progression" if mode == "creer" else "Modifier la progression" }} — Gestion Daara{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <h1>{{ "Nouvelle progression" if mode == "creer" else "Modifier la progression" }}</h1>
+  </div>
+
+  <form class="form" method="post" novalidate>
+    {{ form.hidden_tag() }}
+
+    <div class="form-group">
+      {{ form.talibe_matricule.label }}
+      {{ form.talibe_matricule() }}
+      {% for error in form.talibe_matricule.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        {{ form.sourate.label }}
+        {{ form.sourate(placeholder="Ex : Al-Baqara") }}
+        {% for error in form.sourate.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+      </div>
+      <div class="form-group">
+        {{ form.nombre_versets.label }}
+        {{ form.nombre_versets(min="0") }}
+        {% for error in form.nombre_versets.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        {{ form.date_evaluation.label }}
+        {{ form.date_evaluation() }}
+        {% for error in form.date_evaluation.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+      </div>
+      <div class="form-group">
+        {{ form.appreciation.label }}
+        {{ form.appreciation(placeholder="Ex : Maîtrise complète") }}
+        {% for error in form.appreciation.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+      </div>
+    </div>
+
+    <div class="form-actions">
+      {{ form.submit(class="btn") }}
+      <a class="btn btn-secondary" href="{{ url_for('progressions.liste') }}">Annuler</a>
+    </div>
+  </form>
+{% endblock %}

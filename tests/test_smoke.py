@@ -13,7 +13,7 @@ def test_home_page_returns_200(client):
 
     # Assert
     assert response.status_code == 200
-    assert "Task App" in response.get_data(as_text=True)
+    assert "Gestion de la Daara" in response.get_data(as_text=True)
 
 
 def test_unknown_page_returns_404(client):

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}{{ "Nouveau talibé" if mode == "creer" else "Modifier le talibé" }} — Gestion Daara{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <h1>{{ "Nouveau talibé" if mode == "creer" else "Modifier le talibé" }}</h1>
+  </div>
+
+  <form class="form" method="post" novalidate>
+    {{ form.hidden_tag() }}
+
+    <div class="form-row">
+      <div class="form-group">
+        {{ form.matricule.label }}
+        {% if mode == "creer" %}{{ form.matricule(placeholder="Ex : T0001") }}{% else %}{{ form.matricule(readonly=true) }}{% endif %}
+        {% for error in form.matricule.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+      </div>
+      <div class="form-group">
+        {{ form.classe_code.label }}
+        {{ form.classe_code() }}
+        {% for error in form.classe_code.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        {{ form.prenom.label }}
+        {{ form.prenom() }}
+        {% for error in form.prenom.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+      </div>
+      <div class="form-group">
+        {{ form.nom.label }}
+        {{ form.nom() }}
+        {% for error in form.nom.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+      </div>
+    </div>
+
+    <div class="form-group">
+      {{ form.date_naissance.label }}
+      {{ form.date_naissance() }}
+      {% for error in form.date_naissance.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        {{ form.nom_tuteur.label }}
+        {{ form.nom_tuteur() }}
+      </div>
+      <div class="form-group">
+        {{ form.telephone_tuteur.label }}
+        {{ form.telephone_tuteur() }}
+      </div>
+    </div>
+
+    <div class="form-actions">
+      {{ form.submit(class="btn") }}
+      <a class="btn btn-secondary" href="{{ url_for('talibes.liste') }}">Annuler</a>
+    </div>
+  </form>
+{% endblock %}

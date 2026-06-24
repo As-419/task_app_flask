@@ -1,11 +1,14 @@
 {% extends "base.html" %}
 
-{% block title %}Page introuvable — Task App{% endblock %}
+{% block title %}Page introuvable — Gestion Daara{% endblock %}
 
 {% block content %}
   <section class="hero">
-    <h1>404</h1>
-    <p class="lead">Cette page n'existe pas.</p>
-    <p><a class="btn" href="{{ url_for('tasks.home') }}">Retour à l'accueil</a></p>
+    <span class="eyebrow">Erreur 404</span>
+    <h1>Page introuvable</h1>
+    <p class="lead">La page que vous cherchez n'existe pas ou a été déplacée.</p>
+    <div class="hero-actions">
+      <a class="btn" href="{{ url_for('main.home') }}">Retour à l'accueil</a>
+    </div>
   </section>
 {% endblock %}

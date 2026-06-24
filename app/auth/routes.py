@@ -13,7 +13,7 @@ def register():
     """Création d'un nouveau compte."""
     # Un utilisateur déjà connecté n'a pas besoin de s'inscrire.
     if current_user.is_authenticated:
-        return redirect(url_for("tasks.home"))
+        return redirect(url_for("main.home"))
 
     form = RegisterForm()
     if form.validate_on_submit():
@@ -37,7 +37,7 @@ def register():
 def login():
     """Connexion d'un utilisateur existant."""
     if current_user.is_authenticated:
-        return redirect(url_for("tasks.home"))
+        return redirect(url_for("main.home"))
 
     form = LoginForm()
     if form.validate_on_submit():
@@ -59,7 +59,7 @@ def logout():
     """Déconnexion de l'utilisateur courant."""
     logout_user()
     flash("Vous êtes déconnecté.", "info")
-    return redirect(url_for("tasks.home"))
+    return redirect(url_for("main.home"))
 
 
 def _safe_next_page():
@@ -70,4 +70,4 @@ def _safe_next_page():
     next_page = request.args.get("next")
     if next_page and next_page.startswith("/") and not next_page.startswith("//"):
         return next_page
-    return url_for("tasks.home")
+    return url_for("main.home")

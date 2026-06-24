@@ -68,5 +68,5 @@ def delete_account():
         db.session.delete(user)  # supprime aussi ses tâches (cascade)
         db.session.commit()
         flash("Votre compte a été supprimé.", "info")
-        return redirect(url_for("tasks.home"))
+        return redirect(url_for("main.home"))
     return redirect(url_for("users.profile"))

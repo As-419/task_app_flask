@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Maîtres — Gestion Daara{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <h1>Maîtres</h1>
+    <p class="subtitle">Les serignes qui encadrent les classes (halqas).</p>
+  </div>
+
+  <div class="toolbar">
+    <a class="btn" href="{{ url_for('maitres.creer') }}">+ Nouveau maître</a>
+    <span class="grow"></span>
+    <form class="inline" method="get" action="{{ url_for('maitres.liste') }}">
+      <input type="search" name="q" value="{{ recherche }}" placeholder="🔎 Rechercher un nom…">
+      <button class="btn btn-sm" type="submit">Rechercher</button>
+      {% if recherche %}<a class="btn btn-sm btn-secondary" href="{{ url_for('maitres.liste') }}">Tout afficher</a>{% endif %}
+    </form>
+    <a class="btn btn-sm btn-secondary" href="{{ url_for('maitres.exporter') }}">⬇ Exporter CSV</a>
+  </div>
+
+  {% if maitres %}
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr><th>Matricule</th><th>Nom complet</th><th>Téléphone</th><th></th></tr>
+        </thead>
+        <tbody>
+          {% for m in maitres %}
+            <tr>
+              <td class="mono">{{ m.matricule }}</td>
+              <td>{{ m.nom_complet }}</td>
+              <td>{{ m.telephone or "—" }}</td>
+              <td>
+                <div class="actions">
+                  <a class="icon-btn" href="{{ url_for('maitres.modifier', matricule=m.matricule) }}" title="Modifier">✎</a>
+                  <form method="post" action="{{ url_for('maitres.supprimer', matricule=m.matricule) }}"
+                        onsubmit="return confirm('Supprimer le maître {{ m.nom_complet }} ?');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="icon-btn danger" title="Supprimer">🗑</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty">
+      <span class="ic">👳🏽‍♂️</span>
+      <h3>Aucun maître</h3>
+      <p>Ajoutez un premier maître pour commencer.</p>
+    </div>
+  {% endif %}
+{% endblock %}

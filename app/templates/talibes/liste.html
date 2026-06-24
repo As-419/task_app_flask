@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Talibés — Gestion Daara{% endblock %}
+
+{% block content %}
+  <div class="page-head">
+    <h1>Talibés</h1>
+    <p class="subtitle">Les élèves de la daara, rattachés à une classe.</p>
+  </div>
+
+  <div class="toolbar">
+    <a class="btn" href="{{ url_for('talibes.creer') }}">+ Nouveau talibé</a>
+    <span class="grow"></span>
+    <form class="inline" method="get" action="{{ url_for('talibes.liste') }}">
+      <input type="search" name="q" value="{{ recherche }}" placeholder="🔎 Nom…">
+      <select name="classe">
+        <option value="">Toutes les classes</option>
+        {% for c in classes %}
+          <option value="{{ c.code }}" {{ 'selected' if classe_code == c.code }}>{{ c.libelle }}</option>
+        {% endfor %}
+      </select>
+      <button class="btn btn-sm" type="submit">Filtrer</button>
+      {% if recherche or classe_code %}<a class="btn btn-sm btn-secondary" href="{{ url_for('talibes.liste') }}">Tout afficher</a>{% endif %}
+    </form>
+    <a class="btn btn-sm btn-secondary" href="{{ url_for('talibes.exporter') }}">⬇ Exporter CSV</a>
+  </div>
+
+  {% if talibes %}
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr><th>Matricule</th><th>Prénom</th><th>Nom</th><th>Naissance</th><th>Tuteur</th><th>Classe</th><th></th></tr>
+        </thead>
+        <tbody>
+          {% for t in talibes %}
+            <tr>
+              <td class="mono">{{ t.matricule }}</td>
+              <td>{{ t.prenom }}</td>
+              <td>{{ t.nom }}</td>
+              <td>{{ t.date_naissance.strftime("%d/%m/%Y") if t.date_naissance else "—" }}</td>
+              <td>{{ t.nom_tuteur or "—" }}</td>
+              <td>{{ t.classe.libelle }}</td>
+              <td>
+                <div class="actions">
+                  <a class="icon-btn" href="{{ url_for('talibes.modifier', matricule=t.matricule) }}" title="Modifier">✎</a>
+                  <form method="post" action="{{ url_for('talibes.supprimer', matricule=t.matricule) }}"
+                        onsubmit="return confirm('Supprimer {{ t.prenom }} {{ t.nom }} et ses progressions ?');">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="icon-btn danger" title="Supprimer">🗑</button>
+                  </form>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty">
+      <span class="ic">🧒🏽</span>
+      <h3>Aucun talibé</h3>
+      <p>Ajoutez un talibé (il faut au moins une classe au préalable).</p>
+    </div>
+  {% endif %}
+{% endblock %}

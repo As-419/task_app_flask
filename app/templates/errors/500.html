@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Erreur serveur — Gestion Daara{% endblock %}
+
+{% block content %}
+  <section class="hero">
+    <span class="eyebrow">Erreur 500</span>
+    <h1>Une erreur est survenue</h1>
+    <p class="lead">Le serveur a rencontré un problème. Réessayez dans un instant.</p>
+    <div class="hero-actions">
+      <a class="btn" href="{{ url_for('main.home') }}">Retour à l'accueil</a>
+    </div>
+  </section>
+{% endblock %}

@@ -50,8 +50,8 @@ def create_app(config_name=None, test_config=None):
         return db.session.get(models.User, int(user_id))
 
     # 5. Enregistrement des blueprints (modules de l'application).
-    from app.tasks import bp as tasks_bp
-    app.register_blueprint(tasks_bp)
+    from app.main import bp as main_bp
+    app.register_blueprint(main_bp)
 
     from app.auth import bp as auth_bp
     app.register_blueprint(auth_bp)
@@ -59,10 +59,44 @@ def create_app(config_name=None, test_config=None):
     from app.users import bp as users_bp
     app.register_blueprint(users_bp)
 
-    # 6. Pages d'erreur personnalisées.
+    # Domaine métier « Daara » : un blueprint par entité (comme un contrôleur
+    # par entité en MVC).
+    from app.maitres import bp as maitres_bp
+    app.register_blueprint(maitres_bp)
+
+    from app.classes import bp as classes_bp
+    app.register_blueprint(classes_bp)
+
+    from app.talibes import bp as talibes_bp
+    app.register_blueprint(talibes_bp)
+
+    from app.progressions import bp as progressions_bp
+    app.register_blueprint(progressions_bp)
+
+    # 6. Garde-fou : en production, une vraie SECRET_KEY est obligatoire.
+    if config_name == "production" and app.config.get("SECRET_KEY") in (None, "", "dev-secret-a-changer"):
+        raise RuntimeError(
+            "SECRET_KEY non définie en production : définissez la variable d'environnement."
+        )
+
+    # 7. En-têtes de sécurité HTTP sur toutes les réponses.
+    register_security_headers(app)
+
+    # 8. Pages d'erreur personnalisées.
     register_error_handlers(app)
 
     return app
+
+
+def register_security_headers(app):
+    """Ajoute des en-têtes de sécurité standards à chaque réponse."""
+
+    @app.after_request
+    def _ajouter_entetes(response):
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        return response
 
 
 def register_error_handlers(app):
@@ -71,3 +105,9 @@ def register_error_handlers(app):
     @app.errorhandler(404)
     def page_not_found(error):
         return render_template("errors/404.html"), 404
+
+    @app.errorhandler(500)
+    def internal_error(error):
+        # Annule une éventuelle transaction laissée ouverte par l'erreur.
+        db.session.rollback()
+        return render_template("errors/500.html"), 500
