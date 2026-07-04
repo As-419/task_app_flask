@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if talibe %}Modifier un talibé{% else %}Nouveau talibé{% endif %} — Daara
+{% endblock %}
+
+{% block content %}
+<h1>{% if talibe %}Modifier le talibé {{ talibe.matricule }}{% else %}Nouveau talibé{% endif %}</h1>
+
+{% if form.classe_code.choices %}
+<form method="post" class="form">
+  {{ form.hidden_tag() }}
+
+  <div class="form-group">
+    {{ form.matricule.label }}
+    {% if talibe %}
+      {{ form.matricule(readonly=True) }}
+      <p class="form-hint">Le matricule (clé primaire) n'est pas modifiable.</p>
+    {% else %}
+      {{ form.matricule() }}
+    {% endif %}
+    {% for error in form.matricule.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+  </div>
+
+  <div class="form-group">
+    {{ form.prenom.label }}
+    {{ form.prenom() }}
+    {% for error in form.prenom.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+  </div>
+
+  <div class="form-group">
+    {{ form.nom.label }}
+    {{ form.nom() }}
+    {% for error in form.nom.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+  </div>
+
+  <div class="form-group">
+    {{ form.date_naissance.label }}
+    {{ form.date_naissance(type="date") }}
+    {% for error in form.date_naissance.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+  </div>
+
+  <div class="form-group">
+    {{ form.nom_tuteur.label }}
+    {{ form.nom_tuteur() }}
+    {% for error in form.nom_tuteur.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+  </div>
+
+  <div class="form-group">
+    {{ form.telephone_tuteur.label }}
+    {{ form.telephone_tuteur() }}
+    {% for error in form.telephone_tuteur.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+  </div>
+
+  <div class="form-group">
+    {{ form.classe_code.label }}
+    {{ form.classe_code() }}  {# liste déroulante alimentée depuis la base #}
+    {% for error in form.classe_code.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+  </div>
+
+  {{ form.submit(class="btn") }}
+  <a class="btn btn-secondary" href="{{ url_for('talibes.lister') }}">Annuler</a>
+</form>
+{% else %}
+  {# Un talibé doit obligatoirement être rattaché à une classe. #}
+  <p class="empty">
+    Impossible de créer un talibé : aucune classe n'existe encore.
+    <a href="{{ url_for('classes.creer') }}">Créer d'abord une classe.</a>
+  </p>
+{% endif %}
+{% endblock %}

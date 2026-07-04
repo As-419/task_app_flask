@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Classes — Daara{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Classes</h1>
+  <a class="btn" href="{{ url_for('classes.creer') }}">+ Ajouter une classe</a>
+</div>
+
+<form method="get" action="{{ url_for('classes.lister') }}" class="searchbar">
+  <input type="text" name="q" value="{{ q }}" placeholder="Rechercher par libellé ou niveau…">
+  <button type="submit" class="btn">Rechercher</button>
+  <a class="btn btn-secondary" href="{{ url_for('classes.lister') }}">Réinitialiser</a>
+  <a class="btn" href="{{ url_for('classes.exporter', q=q) }}">Exporter CSV</a>
+</form>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Code</th>
+      <th>Libellé</th>
+      <th>Niveau</th>
+      <th>Maître</th>
+      <th>Talibés</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for c in classes %}
+      <tr>
+        <td>{{ c.code }}</td>
+        <td>{{ c.libelle }}</td>
+        <td>{{ c.niveau or "—" }}</td>
+        <td>{{ c.maitre.prenom }} {{ c.maitre.nom }}</td>
+        <td><span class="badge">{{ c.talibes | length }}</span></td>
+        <td class="actions">
+          <a href="{{ url_for('classes.modifier', code=c.code) }}">Modifier</a>
+          <form method="post" action="{{ url_for('classes.supprimer', code=c.code) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="link-danger"
+                    onclick="return confirm('Supprimer cette classe ?')">Supprimer</button>
+          </form>
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="6" class="empty">Aucune classe trouvée.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

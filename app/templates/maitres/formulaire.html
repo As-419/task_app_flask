@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if maitre %}Modifier un maître{% else %}Nouveau maître{% endif %} — Daara
+{% endblock %}
+
+{% block content %}
+<h1>{% if maitre %}Modifier le maître {{ maitre.matricule }}{% else %}Nouveau maître{% endif %}</h1>
+
+<form method="post" class="form">
+  {{ form.hidden_tag() }}  {# jeton CSRF de Flask-WTF #}
+
+  <div class="form-group">
+    {{ form.matricule.label }}
+    {# La clé saisie est en LECTURE SEULE lors d'une modification. #}
+    {% if maitre %}
+      {{ form.matricule(readonly=True) }}
+      <p class="form-hint">Le matricule (clé primaire) n'est pas modifiable.</p>
+    {% else %}
+      {{ form.matricule() }}
+    {% endif %}
+    {% for error in form.matricule.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+  </div>
+
+  <div class="form-group">
+    {{ form.prenom.label }}
+    {{ form.prenom() }}
+    {% for error in form.prenom.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+  </div>
+
+  <div class="form-group">
+    {{ form.nom.label }}
+    {{ form.nom() }}
+    {% for error in form.nom.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+  </div>
+
+  <div class="form-group">
+    {{ form.telephone.label }}
+    {{ form.telephone() }}
+    {% for error in form.telephone.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+  </div>
+
+  {{ form.submit(class="btn") }}
+  <a class="btn btn-secondary" href="{{ url_for('maitres.lister') }}">Annuler</a>
+</form>
+{% endblock %}

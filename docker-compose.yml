@@ -1,0 +1,28 @@
+# PostgreSQL de développement (le sujet impose PostgreSQL uniquement).
+# Démarrage :  docker compose up -d
+# Les variables ${...} sont lues automatiquement dans le fichier .env.
+
+services:
+
+  db:
+    image: postgres:16
+    container_name: daara_db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      # Hôte 5434 -> conteneur 5432 : on évite le conflit si un PostgreSQL
+      # tourne déjà en local sur 5432 ou 5433.
+      - "5434:5432"
+    volumes:
+      - daara_db_data:/var/lib/postgresql/data
+    healthcheck:
+      # La base est considérée prête seulement quand pg_isready répond.
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  daara_db_data:

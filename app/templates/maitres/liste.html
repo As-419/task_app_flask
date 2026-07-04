@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Maîtres — Daara{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Maîtres</h1>
+  <a class="btn" href="{{ url_for('maitres.creer') }}">+ Ajouter un maître</a>
+</div>
+
+{# Barre de recherche (GET) + Réinitialiser + Export CSV de la liste affichée #}
+<form method="get" action="{{ url_for('maitres.lister') }}" class="searchbar">
+  <input type="text" name="q" value="{{ q }}" placeholder="Rechercher par nom ou prénom…">
+  <button type="submit" class="btn">Rechercher</button>
+  <a class="btn btn-secondary" href="{{ url_for('maitres.lister') }}">Réinitialiser</a>
+  <a class="btn" href="{{ url_for('maitres.exporter', q=q) }}">Exporter CSV</a>
+</form>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Matricule</th>
+      <th>Prénom</th>
+      <th>Nom</th>
+      <th>Téléphone</th>
+      <th>Classes encadrées</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for m in maitres %}
+      <tr>
+        <td>{{ m.matricule }}</td>
+        <td>{{ m.prenom }}</td>
+        <td>{{ m.nom }}</td>
+        <td>{{ m.telephone or "—" }}</td>
+        <td><span class="badge">{{ m.classes | length }}</span></td>
+        <td class="actions">
+          <a href="{{ url_for('maitres.modifier', matricule=m.matricule) }}">Modifier</a>
+          {# Suppression : formulaire POST + confirmation JavaScript + jeton CSRF #}
+          <form method="post" action="{{ url_for('maitres.supprimer', matricule=m.matricule) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="link-danger"
+                    onclick="return confirm('Supprimer ce maître ?')">Supprimer</button>
+          </form>
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="6" class="empty">Aucun maître trouvé.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,9 @@
+# Dépendances de l'application Daara
+# Installer avec :  pip install -r requirements.txt
+
+Flask>=3.0,<4.0
+Flask-SQLAlchemy>=3.1,<4.0     # ORM (aucun SQL brut)
+Flask-Migrate>=4.0,<5.0        # migrations Alembic
+Flask-WTF>=1.2,<2.0            # formulaires + protection CSRF
+psycopg2-binary>=2.9,<3.0      # pilote PostgreSQL
+python-dotenv>=1.0,<2.0        # lecture du fichier .env
