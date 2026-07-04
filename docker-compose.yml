@@ -1,49 +1,28 @@
-# Orchestration de développement : une base PostgreSQL + l'application Flask.
-# Démarrage :  docker compose up --build
+# PostgreSQL de développement (le sujet impose PostgreSQL uniquement).
+# Démarrage :  docker compose up -d
 # Les variables ${...} sont lues automatiquement dans le fichier .env.
 
 services:
 
-  # --- Base de données PostgreSQL ---
   db:
     image: postgres:16
-    container_name: taskapp_db
+    container_name: daara_db
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      # Hôte 5433 -> conteneur 5432 : on évite le conflit si un PostgreSQL
-      # tourne déjà en local sur 5432. (web parle à db en interne sur 5432.)
-      - "5433:5432"
+      # Hôte 5434 -> conteneur 5432 : on évite le conflit si un PostgreSQL
+      # tourne déjà en local sur 5432 ou 5433.
+      - "5434:5432"
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - daara_db_data:/var/lib/postgresql/data
     healthcheck:
-      # On considère la base prête seulement quand pg_isready répond.
+      # La base est considérée prête seulement quand pg_isready répond.
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 5
 
-  # --- Application Flask ---
-  web:
-    build: .
-    container_name: taskapp_web
-    depends_on:
-      db:
-        condition: service_healthy   # attend que la base soit prête
-    environment:
-      FLASK_APP: run.py
-      FLASK_CONFIG: development
-      SECRET_KEY: ${SECRET_KEY}
-      # Dans Docker, l'hôte de la base est le nom du service "db" (pas localhost).
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
-    ports:
-      - "5000:5000"
-    volumes:
-      - .:/app   # code monté en direct : rechargement automatique en développement
-    # Applique les migrations puis démarre le serveur de développement.
-    command: sh -c "flask db upgrade && flask run --host=0.0.0.0 --port=5000"
-
 volumes:
-  db_data:
+  daara_db_data:

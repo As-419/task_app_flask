@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Accueil — Daara{% endblock %}
+
+{% block content %}
+<div class="hero">
+  <h1>Gestion de la Daara</h1>
+  <p class="lead">Maîtres, classes, talibés et suivi de la mémorisation du Coran.</p>
+</div>
+
+<div class="cards">
+  <a class="card" href="{{ url_for('maitres.lister') }}">
+    <span class="card-count">{{ compteurs.maitres }}</span>
+    <span class="card-label">Maîtres</span>
+  </a>
+  <a class="card" href="{{ url_for('classes.lister') }}">
+    <span class="card-count">{{ compteurs.classes }}</span>
+    <span class="card-label">Classes</span>
+  </a>
+  <a class="card" href="{{ url_for('talibes.lister') }}">
+    <span class="card-count">{{ compteurs.talibes }}</span>
+    <span class="card-label">Talibés</span>
+  </a>
+  <a class="card" href="{{ url_for('progressions.lister') }}">
+    <span class="card-count">{{ compteurs.progressions }}</span>
+    <span class="card-label">Progressions</span>
+  </a>
+</div>
+{% endblock %}

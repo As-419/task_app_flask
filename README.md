@@ -1,76 +1,69 @@
-# Task App — application de tâches en Flask
+# Gestion d'une Daara — projet d'examen Flask
 
-Projet pédagogique : on construit une petite application de gestion de tâches
-(todo) avec **Flask**, **pas à pas**. Chaque grande étape vit sur sa propre
-branche Git pour pouvoir être expliquée séparément.
+Application web de gestion d'une école coranique (daara) : maîtres (serignes),
+classes (halqas), talibés et suivi de leur progression dans la mémorisation du
+Coran, avec export CSV. Sujet complet : [L2-GL-Projet-Flask.md](L2-GL-Projet-Flask.md).
 
-## Stack technique
+## Stack technique (contraintes du sujet)
 
 | Élément | Choix |
 |---|---|
 | Framework web | Flask 3 (application factory + blueprints) |
-| Base de données | PostgreSQL (via Docker) |
-| ORM / migrations | SQLAlchemy 2 + Flask-Migrate (Alembic) |
+| ORM / persistance | Flask-SQLAlchemy (aucun SQL brut) |
+| Migrations | Flask-Migrate (Alembic) |
 | Formulaires | Flask-WTF + WTForms (validation + protection CSRF) |
-| Authentification | Flask-Login (sessions) + hash Werkzeug |
-| Templates | Jinja2 (rendu côté serveur, **JavaScript minimal**) |
-| Tests | pytest (base SQLite en mémoire) |
+| Templates | Jinja2 (rendu côté serveur) |
+| Base de données | PostgreSQL uniquement |
+| Architecture | MVC stricte : `models/` / `views/` (blueprints) / `templates/` |
 
-## Les étapes (branches Git)
+## Architecture
 
-1. **`etape-1-socle`** — fondations : factory, configuration, Docker, templates de base, tests.
-2. **`etape-2-authentification`** — inscription, connexion, déconnexion.
-3. **`etape-3-todo`** — gestion des tâches (créer, lister, terminer, modifier, supprimer).
-4. **`etape-4-gestion-utilisateurs`** — profil et gestion des comptes.
+```
+├── run.py                  # Point d'entrée
+├── config.py               # DevelopmentConfig, ProductionConfig
+├── requirements.txt
+└── app/
+    ├── __init__.py         # create_app() — app factory
+    ├── extension.py        # db, migrate, csrf
+    ├── models/             # Entités SQLAlchemy (base, maitre, classe, talibe, progression)
+    ├── forms/              # Formulaires WTForms (un par entité)
+    ├── views/              # Blueprints Flask — contrôleurs MVC (main + un par entité)
+    ├── exceptions/         # Hiérarchie d'exceptions métier (DaaraException...)
+    ├── utils/              # csv_exporter.py (export CSV téléchargeable)
+    └── templates/          # Jinja2 : base.html + liste.html / formulaire.html par entité
+```
 
-Chaque branche est construite par-dessus la précédente.
+Pour chaque entité (Maître, Classe, Talibé, Progression) : **Lister,
+Rechercher, Ajouter, Modifier, Supprimer, Exporter CSV**.
 
-## Démarrer avec Docker (recommandé)
+Règles métier : matricules/codes uniques, suppression interdite si relation
+existante (maître→classes, classe→talibés), suppression d'un talibé en cascade
+sur ses progressions, progression invalide refusée (versets < 0, sourate vide).
+
+## Lancement
 
 ```bash
-cp .env.example .env          # créer sa configuration locale
-docker compose up --build     # démarre PostgreSQL + l'application
+# 0. (Option) Démarrer PostgreSQL avec Docker (port hôte 5434) :
+cp .env.example .env
+docker compose up -d
+
+# 1. Créer et activer l'environnement virtuel
+python -m venv venv
+source venv/bin/activate        # Windows : venv\Scripts\activate
+
+# 2. Installer les dépendances
+pip install -r requirements.txt
+
+# 3. Initialiser les migrations (la base "daara" doit exister)
+flask db init
+flask db migrate -m 'init'
+flask db upgrade
+
+# 4. Lancer l'application
+flask run
 ```
 
-L'application est disponible sur http://localhost:5000
-(les migrations de base de données sont appliquées automatiquement au démarrage).
+L'application est disponible sur http://127.0.0.1:5000.
 
-## Démarrer sans Docker
-
-Il faut un PostgreSQL accessible (voir `DATABASE_URL` dans `.env`).
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements-dev.txt
-
-flask db upgrade   # crée les tables
-flask run          # démarre le serveur de développement
-```
-
-## Lancer les tests
-
-Les tests utilisent une base SQLite en mémoire : **aucun PostgreSQL ni Docker requis**.
-
-```bash
-source venv/bin/activate
-pytest                       # lance tous les tests
-pytest --cov=app             # avec la couverture de code
-```
-
-## Structure du projet
-
-```
-app/
-├── __init__.py        # create_app() : la factory
-├── config.py          # configurations development / testing / production
-├── extensions.py      # instances des extensions (db, migrate, mail…)
-├── models.py          # modèles SQLAlchemy : User, Category, Task
-├── auth/              # module d'authentification        (étape 2)
-├── tasks/             # module des tâches                 (étapes 1 et 3)
-├── users/             # module de gestion des utilisateurs (étape 4)
-├── templates/         # gabarits Jinja2 (base + partials)
-└── static/css/        # feuille de style
-migrations/            # migrations de base de données
-tests/                 # tests pytest
-```
+> Sans Docker : créez une base PostgreSQL `daara` et renseignez
+> `DEV_DATABASE_URL` dans `.env` (seule l'URL change selon l'environnement).

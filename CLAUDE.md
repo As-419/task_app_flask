@@ -1,79 +1,61 @@
-# CLAUDE.md — Task App (projet pédagogique Flask)
+# CLAUDE.md — Gestion d'une Daara (projet d'examen Flask)
 
 Contexte pour les futures sessions Claude Code sur ce dépôt.
 
 ## But du projet
 
-Application de tâches (todo) **pédagogique** : elle sert à enseigner Flask à des
-étudiants **débutants**. Conséquences directes sur le style du code :
+Projet d'**examen** (ISI — Licence 2 Génie Logiciel) : application de gestion
+d'une école coranique (daara). Le sujet complet et **obligatoire** est dans
+[L2-GL-Projet-Flask.md](L2-GL-Projet-Flask.md) — le respecter à la lettre
+(architecture, entités, exceptions, fonctionnalités). Public : étudiants
+débutants, donc :
 
-- **Privilégier la clarté sur l'astuce.** Le code doit être compréhensible par un débutant.
+- **Privilégier la clarté sur l'astuce** ; petits fichiers, noms explicites.
 - **Commentaires en français**, concis, qui expliquent *pourquoi*.
-- **JavaScript au strict minimum.** Tout passe par du rendu serveur (Jinja) et des
-  formulaires HTML classiques (POST). N'ajouter du JS que si c'est réellement indispensable.
-- Petits fichiers, petites fonctions, noms explicites.
+- **JavaScript au strict minimum** (uniquement le `confirm()` de suppression
+  exigé par le sujet). Tout passe par du rendu serveur (Jinja) et des
+  formulaires HTML classiques (POST).
+- **Pas d'authentification** : le sujet ne la demande pas.
 
-## Stack & choix arrêtés
+## Architecture imposée (MVC strict)
 
-- Flask 3 — **application factory** (`create_app`) + **blueprints** (un par domaine).
-- PostgreSQL via **Docker** en dev/prod ; **SQLite en mémoire** pour les tests.
-- SQLAlchemy 2 (typé, `Mapped[...]`) + Flask-Migrate (Alembic).
-- **Flask-WTF + WTForms** pour TOUS les formulaires (validation + CSRF).
-- **Flask-Login** pour les sessions ; mots de passe hachés avec **werkzeug.security**
-  (`generate_password_hash` / `check_password_hash`) — jamais en clair.
-- Jinja2 avec héritage : `base.html` + partials dans `templates/partials/`.
+```
+├── run.py                  # Point d'entrée
+├── config.py               # DevelopmentConfig, ProductionConfig (PostgreSQL uniquement)
+└── app/
+    ├── __init__.py         # create_app() — app factory
+    ├── extension.py        # db, migrate, csrf (init_app dans la factory)
+    ├── models/             # Entités SQLAlchemy : base (abstrait), maitre, classe, talibe, progression
+    ├── forms/              # WTForms (un module par entité) — aucun accès BDD
+    ├── views/              # Blueprints (contrôleurs) : main, maitre, classe, talibe, progression
+    ├── exceptions/         # DaaraException + hiérarchie (levées ET capturées dans views)
+    ├── utils/              # csv_exporter.py — appelé par les vues uniquement
+    └── templates/          # base.html + <entite>/liste.html, <entite>/formulaire.html
+```
 
-## Architecture par blueprint
-
-Chaque module (`auth/`, `tasks/`, `users/`) est un blueprint avec :
-- `__init__.py` : définit le `Blueprint` et importe ses routes ;
-- `routes.py` : les vues (logique HTTP) ;
-- `forms.py` : les formulaires Flask-WTF ;
-- ses gabarits dans `templates/<module>/`.
-
-Les extensions sont créées **sans app** dans `extensions.py` et liées dans la factory
-via `init_app(app)`. Les blueprints sont enregistrés dans `create_app()`.
-
-## Modèle de branches (enseignement pas à pas)
-
-Chaque grande étape = une branche, construite sur la précédente, et poussée :
-
-1. `etape-1-socle` — fondations (factory, config, Docker, templates de base, tests).
-2. `etape-2-authentification` — register / login / logout (Flask-Login + Flask-WTF).
-3. `etape-3-todo` — CRUD des tâches, restreint à l'utilisateur connecté (`@login_required`).
-4. `etape-4-gestion-utilisateurs` — profil, changement de mot de passe, gestion des comptes.
-
-**Chaque branche doit livrer ses propres tests pytest** et rester verte avant le push.
+Points clés du sujet :
+- Clés **saisies** (String, primary_key) pour Maitre/Classe/Talibe ; clé
+  auto-incrémentée pour Progression uniquement.
+- Les vues interrogent directement `db.session` / `Model.query`
+  (pas de couche repository). Aucun SQL brut.
+- Les SelectField (maître, classe, talibé) sont alimentés depuis la base
+  **dans la vue** — jamais de saisie libre.
+- Exceptions métier levées et capturées **dans les vues**, messages via `flash()`.
+- Export CSV de la liste **affichée** (filtrée ou complète) via
+  `utils/csv_exporter.py` (`Content-Disposition: attachment`).
+- Suppression interdite si relation existante (maître→classes, classe→talibés) ;
+  suppression d'un talibé en cascade sur ses progressions.
 
 ## Commandes utiles
 
 ```bash
-# Lancer l'app (dev, sans Docker)
-flask run
-
-# Lancer l'app complète avec Docker (Postgres + web)
-docker compose up --build
-
-# Migrations
-flask db migrate -m "message"
+docker compose up -d          # PostgreSQL (port hôte 5434, cf. .env)
+flask db migrate -m "message" # migrations
 flask db upgrade
-
-# Tests (SQLite en mémoire, pas besoin de Docker)
-pytest
-pytest --cov=app --cov-report=term-missing
+flask run                     # http://127.0.0.1:5000
 ```
 
-## Outillage `.claude/` du projet
+## Branches
 
-- **skills/** : `neversight/flask`, `neversight/pytest`, `linkxzhou/docker-docker`,
-  `jeremylongshore/generating-docker-compose-files`.
-- **rules/** : `common/` + `python/` (style, tests, sécurité, git…).
-- **agents/** : `python-reviewer`, `code-reviewer`, `security-reviewer`, `tdd-guide`, etc.
-- **commands/** : `tdd`, `test-coverage`, `code-review`, `python-review`, `verify`, etc.
-
-## Conventions de nommage
-
-- Routes : verbe/nom clair (`home`, `login`, `register`, `task_create`).
-- Formulaires : `LoginForm`, `RegisterForm`, `TaskForm`.
-- Templates : `templates/<module>/<page>.html`.
-- Tests : `tests/test_<module>.py`, structure Arrange-Act-Assert.
+Les branches `etape-1-socle` → `etape-4-gestion-utilisateurs` contiennent
+l'ancien projet pédagogique (task app). Le projet Daara vit sur `projet-daara`.

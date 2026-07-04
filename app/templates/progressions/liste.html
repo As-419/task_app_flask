@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Progressions — Daara{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Progressions</h1>
+  <a class="btn" href="{{ url_for('progressions.creer') }}">+ Ajouter une progression</a>
+</div>
+
+{# Filtre par talibé (règle du sujet : la page doit pouvoir filtrer par talibé) #}
+<form method="get" action="{{ url_for('progressions.lister') }}" class="searchbar">
+  <select name="talibe">
+    <option value="">— Tous les talibés —</option>
+    {% for t in talibes %}
+      <option value="{{ t.matricule }}" {% if t.matricule == talibe_matricule %}selected{% endif %}>
+        {{ t.prenom }} {{ t.nom }} ({{ t.matricule }})
+      </option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="btn">Filtrer</button>
+  <a class="btn btn-secondary" href="{{ url_for('progressions.lister') }}">Réinitialiser</a>
+  <a class="btn" href="{{ url_for('progressions.exporter', talibe=talibe_matricule) }}">Exporter CSV</a>
+</form>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Talibé</th>
+      <th>Sourate</th>
+      <th>Versets</th>
+      <th>Date d'évaluation</th>
+      <th>Observations</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in progressions %}
+      <tr>
+        <td>{{ p.talibe.prenom }} {{ p.talibe.nom }}</td>
+        <td>{{ p.sourate }}</td>
+        <td><span class="badge">{{ p.nombre_versets }}</span></td>
+        <td>{{ p.date_evaluation.strftime("%d/%m/%Y") if p.date_evaluation else "—" }}</td>
+        <td>{{ p.observations or "—" }}</td>
+        <td class="actions">
+          <a href="{{ url_for('progressions.modifier', progression_id=p.id) }}">Modifier</a>
+          <form method="post" action="{{ url_for('progressions.supprimer', progression_id=p.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="link-danger"
+                    onclick="return confirm('Supprimer cette progression ?')">Supprimer</button>
+          </form>
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="6" class="empty">Aucune progression trouvée.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

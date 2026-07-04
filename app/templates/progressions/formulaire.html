@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if progression %}Modifier une progression{% else %}Nouvelle progression{% endif %} — Daara
+{% endblock %}
+
+{% block content %}
+<h1>
+  {% if progression %}Modifier la progression n°{{ progression.id }}
+  {% else %}Nouvelle progression{% endif %}
+</h1>
+
+{% if form.talibe_matricule.choices %}
+<form method="post" class="form">
+  {{ form.hidden_tag() }}
+
+  <div class="form-group">
+    {{ form.talibe_matricule.label }}
+    {{ form.talibe_matricule() }}  {# liste déroulante alimentée depuis la base #}
+    {% for error in form.talibe_matricule.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+  </div>
+
+  <div class="form-group">
+    {{ form.sourate.label }}
+    {{ form.sourate() }}
+    {% for error in form.sourate.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+  </div>
+
+  <div class="form-group">
+    {{ form.nombre_versets.label }}
+    {{ form.nombre_versets() }}
+    {% for error in form.nombre_versets.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+  </div>
+
+  <div class="form-group">
+    {{ form.date_evaluation.label }}
+    {{ form.date_evaluation(type="date") }}
+    {% for error in form.date_evaluation.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+  </div>
+
+  <div class="form-group">
+    {{ form.observations.label }}
+    {{ form.observations(rows=3) }}
+    {% for error in form.observations.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+  </div>
+
+  {{ form.submit(class="btn") }}
+  <a class="btn btn-secondary" href="{{ url_for('progressions.lister') }}">Annuler</a>
+</form>
+{% else %}
+  {# Une progression doit obligatoirement être rattachée à un talibé. #}
+  <p class="empty">
+    Impossible de créer une progression : aucun talibé n'existe encore.
+    <a href="{{ url_for('talibes.creer') }}">Créer d'abord un talibé.</a>
+  </p>
+{% endif %}
+{% endblock %}

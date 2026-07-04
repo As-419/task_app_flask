@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Talibés — Daara{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Talibés</h1>
+  <a class="btn" href="{{ url_for('talibes.creer') }}">+ Ajouter un talibé</a>
+</div>
+
+{# Recherche par texte + filtre par classe (liste déroulante) #}
+<form method="get" action="{{ url_for('talibes.lister') }}" class="searchbar">
+  <input type="text" name="q" value="{{ q }}" placeholder="Rechercher par nom ou prénom…">
+  <select name="classe">
+    <option value="">— Toutes les classes —</option>
+    {% for c in classes %}
+      <option value="{{ c.code }}" {% if c.code == classe_code %}selected{% endif %}>
+        {{ c.libelle }}
+      </option>
+    {% endfor %}
+  </select>
+  <button type="submit" class="btn">Rechercher</button>
+  <a class="btn btn-secondary" href="{{ url_for('talibes.lister') }}">Réinitialiser</a>
+  <a class="btn" href="{{ url_for('talibes.exporter', q=q, classe=classe_code) }}">Exporter CSV</a>
+</form>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Matricule</th>
+      <th>Prénom et nom</th>
+      <th>Date de naissance</th>
+      <th>Tuteur</th>
+      <th>Classe</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for t in talibes %}
+      <tr>
+        <td>{{ t.matricule }}</td>
+        <td>{{ t.prenom }} {{ t.nom }}</td>
+        <td>{{ t.date_naissance.strftime("%d/%m/%Y") if t.date_naissance else "—" }}</td>
+        <td>{{ t.nom_tuteur or "—" }}</td>
+        <td>{{ t.classe.libelle }}</td>
+        <td class="actions">
+          <a href="{{ url_for('talibes.modifier', matricule=t.matricule) }}">Modifier</a>
+          <form method="post" action="{{ url_for('talibes.supprimer', matricule=t.matricule) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="link-danger"
+                    onclick="return confirm('Supprimer ce talibé et toutes ses progressions ?')">Supprimer</button>
+          </form>
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="6" class="empty">Aucun talibé trouvé.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}
+  {% if classe %}Modifier une classe{% else %}Nouvelle classe{% endif %} — Daara
+{% endblock %}
+
+{% block content %}
+<h1>{% if classe %}Modifier la classe {{ classe.code }}{% else %}Nouvelle classe{% endif %}</h1>
+
+{% if form.maitre_matricule.choices %}
+<form method="post" class="form">
+  {{ form.hidden_tag() }}
+
+  <div class="form-group">
+    {{ form.code.label }}
+    {% if classe %}
+      {{ form.code(readonly=True) }}
+      <p class="form-hint">Le code (clé primaire) n'est pas modifiable.</p>
+    {% else %}
+      {{ form.code() }}
+    {% endif %}
+    {% for error in form.code.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+  </div>
+
+  <div class="form-group">
+    {{ form.libelle.label }}
+    {{ form.libelle() }}
+    {% for error in form.libelle.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+  </div>
+
+  <div class="form-group">
+    {{ form.niveau.label }}
+    {{ form.niveau() }}
+    {% for error in form.niveau.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+  </div>
+
+  <div class="form-group">
+    {{ form.maitre_matricule.label }}
+    {{ form.maitre_matricule() }}  {# liste déroulante alimentée depuis la base #}
+    {% for error in form.maitre_matricule.errors %}<p class="form-error">{{ error }}</p>{% endfor %}
+  </div>
+
+  {{ form.submit(class="btn") }}
+  <a class="btn btn-secondary" href="{{ url_for('classes.lister') }}">Annuler</a>
+</form>
+{% else %}
+  {# Une classe doit obligatoirement avoir un maître : il faut en créer un d'abord. #}
+  <p class="empty">
+    Impossible de créer une classe : aucun maître n'existe encore.
+    <a href="{{ url_for('maitres.creer') }}">Créer d'abord un maître.</a>
+  </p>
+{% endif %}
+{% endblock %}

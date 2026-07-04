@@ -7,7 +7,7 @@ Lancement en développement :
 """
 from app import create_app
 
-# create_app() lit la variable d'environnement FLASK_CONFIG (par défaut "development").
+# create_app() lit la variable d'environnement FLASK_CONFIG (défaut : development).
 app = create_app()
 
 if __name__ == "__main__":

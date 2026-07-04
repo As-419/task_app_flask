@@ -3,23 +3,39 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Task App{% endblock %}</title>
+  <title>{% block title %}Daara{% endblock %}</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-  {# Barre de navigation (partial réutilisable) #}
-  {% include "partials/_navbar.html" %}
+  {# Barre de navigation commune à toutes les pages #}
+  <nav class="navbar">
+    <a class="navbar-brand" href="{{ url_for('main.accueil') }}">☪ Daara</a>
+    <div class="navbar-links">
+      <a href="{{ url_for('maitres.lister') }}">Maîtres</a>
+      <a href="{{ url_for('classes.lister') }}">Classes</a>
+      <a href="{{ url_for('talibes.lister') }}">Talibés</a>
+      <a href="{{ url_for('progressions.lister') }}">Progressions</a>
+    </div>
+  </nav>
 
   <main class="container">
-    {# Messages flash (succès / erreur / info) #}
-    {% include "partials/_messages.html" %}
+    {# Messages flash envoyés par les vues : flash("...", "success"|"error"|"info") #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul class="flashes">
+          {% for category, message in messages %}
+            <li class="flash flash-{{ category }}">{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
 
     {# Contenu propre à chaque page #}
     {% block content %}{% endblock %}
   </main>
 
   <footer class="footer">
-    <p>Task App — projet pédagogique Flask</p>
+    <p>Gestion d'une Daara — ISI Licence 2 Génie Logiciel</p>
   </footer>
 </body>
 </html>
